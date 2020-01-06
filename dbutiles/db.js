@@ -9,11 +9,10 @@ const session = driver.session();
 
 
 //example on creating node on neo4j replaced in get/post later 
-const personName = 'sara';
-const resultPromise = session.run(
-  'CREATE (a:Person {name: $name}) RETURN a',
-  {name: personName}
-);
+// const resultPromise = session.run(
+//   `CREATE (user:user {name: 'amr'})-[:BOOKED]->(J:journey)`,
+  
+// );
 
 
 module.exports = session
