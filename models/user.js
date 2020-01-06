@@ -1,7 +1,7 @@
 // const bcrypt = require('bcryptjs')
 
 //Creating dummy variablie instead of database-model
-const User = {};
+const User = [];
 
 //export the model
 module.exports = User;
@@ -35,3 +35,4 @@ module.exports = User;
 // }
 
 //create a model
+// const User = mongoose.model('user', userSchema)
