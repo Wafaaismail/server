@@ -1,15 +1,15 @@
 const JWT = require("jsonwebtoken");
 const uuidv4 = require("uuid/v4");
 const _ = require("lodash");
-
-const User = {};
+const { JWT_SECRET } = require("./secretKey/index");
+const User = require("./models/user");
 
 createToken = user => {
   return JWT.sign(
     {
       sub: user.id
     },
-    "userAuthintication"
+    JWT_SECRET
   );
 };
 
@@ -40,9 +40,11 @@ module.exports = {
 
   signIn: async (req, res, next) => {
     //Generate JWT token
+    const token = createToken(req.user);
+    res.status(200).json({ token });
   },
 
   authorized: async (req, res, next) => {
-    //Redirect to application
+    //Redirect to authorized page
   }
 };
