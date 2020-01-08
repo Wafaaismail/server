@@ -47,7 +47,7 @@ passport.use(
           return done(null, false);
         }
         //check if the password is correct
-        const isMatch = (await user.password) == password;
+        const isMatch = user.password == password;
 
         //if not ,handle it
         if (!isMatch) {

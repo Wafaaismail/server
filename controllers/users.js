@@ -5,14 +5,16 @@ const { JWT_SECRET } = require("../secretKey/index");
 const User = require("../models/user");
 
 createToken = user => {
-  return JWT.sign({
-    iss: 'sapa7Elkonafa',
-    sub: user.id,
-    iat: new Date().getTime(),//current time 
-    exp: new Date().setDate(new Date().getDate() + 1)//current time +1 day 
-  }, JWT_SECRET);
-}
-
+  return JWT.sign(
+    {
+      iss: "Creating Token",
+      sub: user.id,
+      iat: new Date().getTime(), //current time
+      exp: new Date().setDate(new Date().getDate() + 1) //current time +1 day
+    },
+    JWT_SECRET
+  );
+};
 
 module.exports = {
   signUp: async (req, res, next) => {
@@ -30,32 +32,25 @@ module.exports = {
 
     //And add it to database
     // User = { ...User, [newUser.id]: newUser };
-    User.push({
-      [newUser.id]: newUser,
-      email,
-      password
-    })
+    User.push(newUser);
     // res.json(User)
 
     //Create token depending on current user id
     const token = createToken(newUser);
 
     //Respond with created token
-    res.status(200).json({ token })
+    res.status(200).json({ token });
   },
 
   signIn: async (req, res, next) => {
     //generate token
-    const token = createToken(req.user)
-    res.status(200).json({ token })
-
+    const token = createToken(req.user);
+    res.status(200).json({ token });
   },
 
   authorized: async (req, res, next) => {
     //Redirect to authorized page
-    console.log('i managed to get here!')
-    res.json({ secrets: 'resource' })
-
-
+    console.log("i managed to get here!");
+    res.json({ secrets: "resource" });
   }
 };
