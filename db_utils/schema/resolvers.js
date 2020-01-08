@@ -1,4 +1,5 @@
 const session = require('../session')
+const { toString } = require('lodash')
 
 const resolvers = {
   Query: {
@@ -13,6 +14,15 @@ const resolvers = {
       // const output = data.records.map(record => record._fields[0].properties)[0]
       console.log(output)
 
+      return output
+    }
+  },
+  Mutation: {
+    addUser: async (parent, args, context, info) => {
+      console.log(args);
+      const data = await session.run(`CREATE (user:user ${JSON.stringify(args)} RETURN user`)
+      // access node properties
+      const output = data.records[0]._fields[0].properties
       return output
     }
   }
