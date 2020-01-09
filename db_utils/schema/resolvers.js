@@ -1,5 +1,18 @@
 const session = require('../session')
-const { toString } = require('lodash')
+const { toString, map } = require('lodash')
+const buildMutationFuncs = require('../nodesCRUD')
+
+const prepareArgs = (args) => {
+  let stringifiedArgs = "{"
+  map(args, (value, key) => {
+    const prop = `${key}: '${value}',`
+    stringifiedArgs += prop
+  })
+  stringifiedArgs = stringifiedArgs.slice(0, -1)
+  stringifiedArgs += "}"
+  console.log(stringifiedArgs)
+  return stringifiedArgs
+}
 
 const resolvers = {
   Query: {
@@ -17,15 +30,7 @@ const resolvers = {
       return output
     }
   },
-  Mutation: {
-    addUser: async (parent, args, context, info) => {
-      console.log(args);
-      const data = await session.run(`CREATE (user:user ${JSON.stringify(args)} RETURN user`)
-      // access node properties
-      const output = data.records[0]._fields[0].properties
-      return output
-    }
-  }
+  Mutation: buildMutationFuncs()
 }
 
 module.exports = resolvers

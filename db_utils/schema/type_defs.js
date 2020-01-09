@@ -36,7 +36,7 @@ const typeDefs = gql`
   type Country{
       name: String
   }
-  type Vechile{
+  type Vehicle{
       type: String
       code :String
   }
@@ -49,7 +49,15 @@ const typeDefs = gql`
       user: User!
   }
   type Mutation{
-    addUser(name: String, email: String, password: String): User  
+    createUser(name: String, email: String, password: String): User
+    createJourney(start_dt:String  ,end_dt:String , duration:String) : Journey
+    createPassenger(name :String , passport_data : String ) : Passenger
+    createStation(name : String , code : String) :Station 
+    createCity (name : String) :City 
+    createCountry(name : String) : Country 
+    createTrip(start_dt:String  ,end_dt:String , duration:String) : Trip 
+    createVehicle(type :String ,code :String) : Vehicle 
+    createPayment(type:String  , card_no: String ,status: Boolean): Payment
   }
 `
 
