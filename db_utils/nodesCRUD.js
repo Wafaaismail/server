@@ -1,6 +1,7 @@
 const { map, upperFirst, cloneDeep, get } = require('lodash')
 const session = require('./session')
 const uuid = require('../helpers/uuid')
+
 // create a list with node names
 const nodeNames = [
   'user', 'journey', 'trip', 
@@ -8,52 +9,35 @@ const nodeNames = [
   'city', 'country', 'vehicle'
 ]
 
-const prepareArgs = (args) => {
-  args['id'] = uuid()
-  let stringifiedArgs = "{"
+const stringifyArgs = (args) => {
+  let stringifiedArgs = '{'
   map(args, (value, key) => {
     const prop = `${key}: '${value}',`
     stringifiedArgs += prop
   })
-
+  // remove last comma
   stringifiedArgs = stringifiedArgs.slice(0, -1)
-  stringifiedArgs += "}"
-  console.log(stringifiedArgs)
+  stringifiedArgs += '}'
   return stringifiedArgs
 }
 
-// const createNode = (app) => {  
-//   return async (parent, args, context, info) => {  
-//     // create node
-//     const data = await session.run(`CREATE (a:${app} ${prepareArgs(args)}) RETURN a`)
-//     // return node properties
-//     const nodeProps = data.records[0]._fields[0].properties
-//     return nodeProps
-//   }
-// }
+const createNode = (nodeName) => {  
+  return async (parent, args, context, info) => {  
+    // prepare a string of node arguments
+    const nodeArgs = stringifyArgs({ ...args, id: uuid() })
+    // create node
+    const data = await session.run(`CREATE (a:${nodeName} ${nodeArgs}) RETURN a`)
+    // access and return node properties
+    const nodeProps = data.records.map(record => record._fields[0].properties)[0]
+    console.log(nodeProps)
+    return nodeProps
+  }
+}
 
 const buildMutationFuncs = () => {
   const myFuncs = {}
   map(nodeNames, (nodeName) => {
-    const create = async (parent, args, context, info) => {  
-      // create node
-      const data = await session.run(`CREATE (a:${nodeName} ${prepareArgs(args) }) RETURN a`)
-      // return node properties
-      const nodeProps = data.records[0]._fields[0].properties
-      console.log(nodeProps)
-      return nodeProps
-    }
-    myFuncs[`create${upperFirst(nodeName)}`] = create
-    // const handlers = {
-    //   [`create${upperFirst(nodeName)}`]: createNode,
-    //   // [`read${upperFirst(nodeName)}`]: readNode,
-    //   // [`update${upperFirst(nodeName)}`]: updateNode,
-    //   // [`delete${upperFirst(nodeName)}`]: deleteNode
-    // }
-
-    // myFuncs[`${nodeName}Funcs`] = (app, ) => (
-    //   get(handlers, a, state => state)(app)
-    // )
+    myFuncs[`create${upperFirst(nodeName)}`] = createNode(nodeName)
   })
   return myFuncs
 }

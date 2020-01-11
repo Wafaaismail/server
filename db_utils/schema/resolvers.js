@@ -2,18 +2,6 @@ const session = require('../session')
 const { toString, map } = require('lodash')
 const buildMutationFuncs = require('../nodesCRUD')
 
-const prepareArgs = (args) => {
-  let stringifiedArgs = "{"
-  map(args, (value, key) => {
-    const prop = `${key}: '${value}',`
-    stringifiedArgs += prop
-  })
-  stringifiedArgs = stringifiedArgs.slice(0, -1)
-  stringifiedArgs += "}"
-  console.log(stringifiedArgs)
-  return stringifiedArgs
-}
-
 const resolvers = {
   Query: {
     user: async (parent, args, context, info) => {
