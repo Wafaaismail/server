@@ -1,6 +1,6 @@
 const { map, upperFirst, cloneDeep, get } = require('lodash')
-const session = require('./session')
-const uuid = require('../helpers/uuid')
+const session = require('../session')
+const uuid = require('../../helpers/uuid')
 
 // create a list with node names
 const nodeNames = [
@@ -21,7 +21,7 @@ const stringifyArgs = (args) => {
   return stringifiedArgs
 }
 
-const createNode = (nodeName) => {  
+const createNode = (nodeName) => {
   return async (parent, args, context, info) => {  
     // prepare a string of node arguments
     const nodeArgs = stringifyArgs({ ...args, id: uuid() })
