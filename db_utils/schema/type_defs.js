@@ -9,6 +9,8 @@ scalar JSONObject
   type Mutation{
 
     createNode( nodelabel :String , nodeArgs :JSONObject) :JSONObject
+    updateNode(nodeId: String,nodeArgs:JSONObject):String
+    deleteNode(nodeId:String):Boolean
 
 
 
