@@ -13,10 +13,10 @@ const resolvers = {
     node: async (parent, args, context, info) => {
 
       // query for user by name (create the user manually if it doesn't already exist in your local neo4j db)
-      const data = await session.run(`MATCH (u:user {name: '${args.name}'}) RETURN u`)
+      const data = await session.run(`MATCH (u:${args.nodelabel} ) RETURN u`)
       // session.close()
 
-      // access node properties
+      // access node properties 
       const output = data.records.map(record => record._fields[0].properties)[0]
       console.log(output)
 
@@ -48,7 +48,7 @@ const resolvers = {
       console.log(args)
       const nodeArgs =stringifyArgs( { ...args.nodeArgs })
       console.log(nodeArgs)
-      const data = await session.run(`MATCH (a {id: ${JSON.stringify(args.nodeId)}}) SET a += ${nodeArgs} RETURN labels(a)`)
+      const data = await session.run(`MATCH (a {id: ${JSON.stringify(args.nodeId)}}) SET a += ${nodeArgs} `)
 
     },
     deleteNode:async (parent, args, context, info) => {
