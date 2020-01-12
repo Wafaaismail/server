@@ -4,7 +4,7 @@ const relateTwoNodes = async (node1ID, node2ID, relType, biDirectional) => {
   const data = await session.run(`
     MATCH (node1 {id: ${node1ID}})
     MATCH (node2 {id: ${node2ID}})
-    CREATE (node1)-[rel:${relType.toUpperCase()}]-${biDirectional ? '' : '>'}(node2)
+    CREATE (node1)-[rel:${relType}]-${biDirectional ? '' : '>'}(node2)
     RETURN rel
   `)
   console.log('Related two nodes')

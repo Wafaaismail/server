@@ -2,13 +2,12 @@ const express = require('express')
 const { ApolloServer } = require('apollo-server')
 const typeDefs = require('./db_utils/schema/type_defs')
 const resolvers = require('./db_utils/schema/resolvers')
-
+const  { makeExecutableSchema } = require('graphql-tools');
 const app = express()
 
 // initialize apollo server
 const server = new ApolloServer({
-  typeDefs,
-  resolvers
+  schema : makeExecutableSchema({ typeDefs, resolvers })
 })
 // const makeAugmentedSchema = require('neo4j-graphql-js')
 // const schema = makeAugmentedSchema({ typeDefs })
