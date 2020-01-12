@@ -1,19 +1,23 @@
 const session = require('../session')
 
-const relateTwoNodes = async (node1ID, node2ID, relType, biDirectional) => {
+const relateTwoNodes = async (parent, args, context, info) => {
+  
+  console.log('1', args.node1ID);
+  console.log('2', args.node2ID);
   const data = await session.run(`
-    MATCH (node1 {id: ${node1ID}})
-    MATCH (node2 {id: ${node2ID}})
-    CREATE (node1)-[rel:${relType}]-${biDirectional ? '' : '>'}(node2)
+    MATCH (node1 {id: ${JSON.stringify(args.node1ID)}})
+    MATCH (node2 {id: ${JSON.stringify(args.node2ID)}})
+    CREATE (node1)-[rel:${args.relType} {status: "created"}]-${args.biDirectional ? '' : '>'}(node2)
     RETURN rel
   `)
-  console.log('Related two nodes')
-  const relProps = data.records.map(record => record._fields[0].properties)
+  // biDirectional doesn't work (get back to it)
+  const relProps = data.records.map(record => record._fields[0].properties)[0]
   console.log(relProps)
+  return relProps
 }
 
 // NOTE: add this manually in neo4j for testing: CREATE (:person {id: 1}), (:person {id: 2})
-relateTwoNodes(1, 2, 'loves', false)
+// relateTwoNodes(1, 'loves', 2)
 // run this file (node relationships.js) , then go check the relationship
 
 module.exports = relateTwoNodes

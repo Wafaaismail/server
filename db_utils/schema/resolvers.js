@@ -6,7 +6,6 @@ const relateTwoNodes = require('../operations/relationships')
 const stringifyArgs = (args) => {
   // delete args.nodelabel
   return '{'+map(args, (d, key)=>(`${key}: ${JSON.stringify(d)}`)).join(', ')+'}'
- 
 }
 const resolvers = {
   JSONObject: GraphQLJSONObject,
@@ -30,7 +29,7 @@ const resolvers = {
     createNode: async (parent, args, context, info) => {
       // prepare a string of node arguments
       console.log(args)
-      const nodeArgs =stringifyArgs( { ...args.nodeArgs, id: uuid() })
+      const nodeArgs = stringifyArgs({ ...args.nodeArgs, id: uuid() })
       console.log(nodeArgs)
       // create nodes
       const data = await session.run(`CREATE (a:${args.nodelabel} ${nodeArgs}) RETURN a`)
