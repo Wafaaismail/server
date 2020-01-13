@@ -17,13 +17,24 @@ app.use(bodyParser.json());
 app.use("/users", require("./routes/users"));
 // initialize apollo server
 const server = new ApolloServer({
-  schema: makeExecutableSchema({ typeDefs, resolvers })
+  schema: makeExecutableSchema({ typeDefs, resolvers }),
+  formatError: error => {
+    return error;
+  },
+  context: ({ req, res }) => {
+    return {
+      req,
+      res
+    };
+  }
 });
 
 // run server
 const PORT = 3000;
-const HOST = "localhost";
-server.listen(PORT, HOST).then(({ url }) => {
-  console.log(`GraphQL API ready at ${url}`);
-});
-// app.listen(PORT, () => console.log(`server running at port ${PORT}`))
+server.applyMiddleware({ app, path: "/graphql" });
+
+// const HOST = "localhost";
+// server.listen(PORT, HOST).then(({ url }) => {
+//   console.log(`GraphQL API ready at ${url}`);
+// });
+app.listen(PORT, () => console.log(`server running at port ${PORT}`));

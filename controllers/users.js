@@ -1,8 +1,9 @@
 const JWT = require("jsonwebtoken");
-const uuid = require("../helpers/uuid");
-const _ = require("lodash");
+// const uuid = require("../helpers/uuid");
+const { find } = require("lodash");
 const { JWT_SECRET } = require("../secretKey/index");
 const User = require("../models/user");
+const resolvers = require("../db_utils/schema/resolvers");
 
 createToken = user => {
   return JWT.sign(
@@ -18,19 +19,20 @@ createToken = user => {
 
 module.exports = {
   signUp: async (req, res, next) => {
-    const { email, password } = req.value.body;
+    const { name, email, password } = req.value.body;
 
     //Return error if there's a user with the same email
-    const foundUser = await _.find(User, { email });
+    const foundUser = await find(User, { email });
     if (foundUser) {
       return res.status(403).json({ error: "Email already exists" });
     }
 
     //If not, then create a new user
-    const newUser = { id: uuid(), email, password };
+    const newUser = { name, email, password };
 
     //And add it to database
-    User.push(newUser);
+    // User.push(newUser);
+    resolvers.Mutation.createNode({}, { nodelabel: "user", nodeArgs: newUser });
 
     //Create token depending on current user id
     const token = createToken(newUser);

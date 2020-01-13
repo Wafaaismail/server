@@ -2,7 +2,7 @@ const passport = require("passport");
 const jwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
 const localStrategy = require("passport-local").Strategy;
-const _ = require("lodash");
+const { find } = require("lodash");
 const User = require("./models/user");
 const { JWT_SECRET } = require("./secretKey/index");
 
@@ -16,7 +16,7 @@ passport.use(
     async (payload, done) => {
       try {
         //find the user specified in the token
-        const user = await _.find(User, { id: payload.sub });
+        const user = await find(User, { id: payload.sub });
 
         //if user does not exist, handle it
         if (!user) {
@@ -41,7 +41,7 @@ passport.use(
     async (email, password, done) => {
       try {
         //find the user given the email
-        const user = await _.find(User, { email });
+        const user = await find(User, { email });
         //if not ,handle it
         if (!user) {
           return done(null, false);
