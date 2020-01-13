@@ -1,7 +1,7 @@
 // const bcrypt = require('bcryptjs')
 const reslovers = require("../db_utils/schema/resolvers");
 
-//Creating dummy variablie instead of database-model
+//Fetching users from GraphDB
 const User = reslovers.Query.node({}, { nodelabel: "user" });
 
 //export the model

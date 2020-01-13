@@ -30,7 +30,7 @@ module.exports = {
     //If not, then create a new user
     const newUser = { name, email, password };
 
-    //And add it to database
+    //And add it to GraphDB
     // User.push(newUser);
     resolvers.Mutation.createNode({}, { nodelabel: "user", nodeArgs: newUser });
 
