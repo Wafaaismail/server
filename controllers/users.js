@@ -1,8 +1,8 @@
 const JWT = require("jsonwebtoken");
 // const uuid = require("../helpers/uuid");
-const { find } = require("lodash");
+const { isEmpty } = require("lodash");
 const { JWT_SECRET } = require("../secretKey/index");
-const User = require("../models/user");
+// const User = require("../models/user");
 const resolvers = require("../db_utils/schema/resolvers");
 
 createToken = user => {
@@ -20,10 +20,13 @@ createToken = user => {
 module.exports = {
   signUp: async (req, res, next) => {
     const { name, email, password } = req.value.body;
-
+    console.log(req.value.body)
+    // console.log("Sign up",User)
     //Return error if there's a user with the same email
-    const foundUser = await find(User, { email });
-    if (foundUser) {
+    const foundUser = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res);
+    console.log("user",foundUser)
+
+    if (!isEmpty(foundUser)) {
       return res.status(403).json({ error: "Email already exists" });
     }
 

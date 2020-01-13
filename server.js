@@ -18,6 +18,7 @@ app.use("/users", require("./routes/users"));
 
 // initialize apollo server
 const server = new ApolloServer({
+  introspection:true,
   schema: makeExecutableSchema({ typeDefs, resolvers }),
   formatError: error => {
     return error;
@@ -31,7 +32,7 @@ const server = new ApolloServer({
 });
 
 // run server
-const PORT = 3000;
+const PORT = 3030;
 server.applyMiddleware({ app, path: "/graphql" });
 
 // const HOST = "localhost";

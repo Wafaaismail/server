@@ -3,7 +3,7 @@ const jwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
 const localStrategy = require("passport-local").Strategy;
 const { find } = require("lodash");
-const User = require("./models/user");
+const resolvers = require("./db_utils/schema/resolvers");
 const { JWT_SECRET } = require("./secretKey/index");
 
 // JWT passport strategy
@@ -16,7 +16,7 @@ passport.use(
     async (payload, done) => {
       try {
         //find the user specified in the token
-        const user = await find(User, { id: payload.sub });
+        const user = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs: {id: payload.sub} }) .then(res=> res);
 
         //if user does not exist, handle it
         if (!user) {
@@ -41,7 +41,7 @@ passport.use(
     async (email, password, done) => {
       try {
         //find the user given the email
-        const user = await find(User, { email });
+        const user = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res);
         //if not ,handle it
         if (!user) {
           return done(null, false);

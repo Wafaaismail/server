@@ -4,7 +4,7 @@ const typeDefs = gql`
 scalar JSONObject
 
   type Query{
-      node(nodelabel:String):JSONObject
+      node(nodelabel:String nodeArgs:JSONObject):JSONObject
       
   }
   type Mutation{

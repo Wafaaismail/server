@@ -14,12 +14,12 @@ const resolvers = {
   Query: {
     node: async (parent, args, context, info) => {
       // query for user by name (create the user manually if it doesn't already exist in your local neo4j db)
-      const data = await session.run(`MATCH (u:${args.nodelabel}  ) RETURN u`);
+      const data = await session.run(`MATCH (u:${args.nodelabel} ${stringifyArgs(args.nodeArgs)} ) RETURN u`);
       // session.close()
 
       // access node properties
       const output = data.records.map(record => record._fields[0].properties);
-      console.log(output);
+      // console.log(output);
 
       return output;
     }

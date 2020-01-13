@@ -1,9 +1,13 @@
 // const bcrypt = require('bcryptjs')
 const reslovers = require("../db_utils/schema/resolvers");
-
+const apoc = require('apoc')
+const session = require('../db_utils/session')
 //Fetching users from GraphDB
-const User = reslovers.Query.node({}, { nodelabel: "user" });
+// const User = reslovers.Query.node({}, { nodelabel: "user" }) .then(res=> res)
 
+const User = session.run(`CALL apoc.trigger.add("fetchData","MATCH (u:user) RETURN u",{phase:'before'})`)
+
+console.log('user=>',User.then(res=>(res)))
 //export the model
 module.exports = User;
 
