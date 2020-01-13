@@ -3,7 +3,6 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser')
 
 // folders
-const session = require('./dbutiles/db')
 
 //consts def
 const { ApolloServer } = require('apollo-server')
