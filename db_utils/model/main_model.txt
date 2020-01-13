@@ -1,0 +1,21 @@
+CREATE
+  (`user`:user { name: "", password: "", email: "" }) ,
+  (`payment`:payment { type: "", card_no: "", status: "" }) ,
+  (`journey`:journey { start_dt: "", end_dt: "", duration:"" }) ,
+  (`passenger`:passenger { name: "", passport_data: "" }) ,
+  (`trip`:trip { start_dt: "", end_dt: "", duration:"" }) ,
+  (`station`:station { name: "", code: "" }) ,
+  (`city`:city { name: "" }) ,
+  (`country`:country { name: "" }) ,
+  (`vehicle`:vehicle { type: "", code: "" }) ,
+  
+  (`user`)-[:`MAKES` ]->(`payment`),
+  (`payment`)-[:`FOR` ]->(`journey`),
+  (`user`)-[:`BOOKED` ]->(`journey`),
+  (`journey`)-[:`FOR` ]->(`passenger`),
+  (`journey`)-[:`HAS` ]->(`trip`),
+  (`trip`)-[:`TO` ]->(`station`),
+  (`station`)-[:`EXISTS_IN` ]->(`city`),
+  (`city`)-[:`EXISTS_IN` ]->(`country`),
+  (`trip`)-[:`FROM` ]->(`station`),
+  (`vehicle`)-[:`MAKES` ]->(`trip`)
