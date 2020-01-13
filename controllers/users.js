@@ -1,5 +1,5 @@
 const JWT = require("jsonwebtoken");
-const uuidv4 = require("uuid/v4");
+const uuid = require("../helpers/uuid");
 const _ = require("lodash");
 const { JWT_SECRET } = require("../secretKey/index");
 const User = require("../models/user");
@@ -27,13 +27,10 @@ module.exports = {
     }
 
     //If not, then create a new user
-    // const newUser = { id: uuidv4(), email, password };
-    const newUser = { id: uuidv4(), email, password };
+    const newUser = { id: uuid(), email, password };
 
     //And add it to database
-    // User = { ...User, [newUser.id]: newUser };
     User.push(newUser);
-    // res.json(User)
 
     //Create token depending on current user id
     const token = createToken(newUser);
