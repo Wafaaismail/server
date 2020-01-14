@@ -20,23 +20,20 @@ createToken = user => {
 module.exports = {
   signUp: async (req, res, next) => {
     const { name, email, password } = req.value.body;
-    console.log(req.value.body)
     // console.log("Sign up",User)
     //Return error if there's a user with the same email
     const foundUser = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res);
-    console.log("user",foundUser)
 
     if (!isEmpty(foundUser)) {
       return res.status(403).json({ error: "Email already exists" });
     }
 
     //If not, then create a new user
-    const newUser = { name, email, password };
+    let newUser = { name, email, password };
 
     //And add it to GraphDB
     // User.push(newUser);
-    resolvers.Mutation.createNode({}, { nodelabel: "user", nodeArgs: newUser });
-
+    newUser = await resolvers.Mutation.createNode({}, { nodelabel: "user", nodeArgs: newUser }).then(res=>res);
     //Create token depending on current user id
     const token = createToken(newUser);
 

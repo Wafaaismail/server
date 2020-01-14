@@ -15,9 +15,9 @@ passport.use(
     },
     async (payload, done) => {
       try {
+
         //find the user specified in the token
         const user = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs: {id: payload.sub} }) .then(res=> res);
-
         //if user does not exist, handle it
         if (!user) {
           return done(null, false);
@@ -46,9 +46,10 @@ passport.use(
         if (!user) {
           return done(null, false);
         }
+        
         //check if the password is correct
-        const isMatch = user.password == password;
-
+        const isMatch = user[0].password == password;
+      
         //if not ,handle it
         if (!isMatch) {
           return done(null, false);
