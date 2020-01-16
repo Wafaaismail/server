@@ -4,8 +4,8 @@ const typeDefs = gql`
 scalar JSONObject
 
   type Query{
-      node(nodelabel:String nodeArgs:JSONObject):JSONObject
-      
+      getNodes(nodelabel:String, nodeArgs:JSONObject):[JSONObject]
+      search(type: String, searchString: String): [String]
   }
   type Mutation{
 

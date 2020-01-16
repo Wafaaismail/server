@@ -1,7 +1,7 @@
 {
     "development": {
         "username": "neo4j",
-        "password": "password",
+        "password": "123",
         "neo4j_url": "bolt://localhost:7687",
         "base_url": "http://localhost:3000"
     }

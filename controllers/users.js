@@ -22,7 +22,7 @@ module.exports = {
     const { name, email, password } = req.value.body;
     // console.log("Sign up",User)
     //Return error if there's a user with the same email
-    const foundUser = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res);
+    const foundUser = await resolvers.Query.getNodes({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res[0]);
 
     if (!isEmpty(foundUser)) {
       return res.status(403).json({ error: "Email already exists" });

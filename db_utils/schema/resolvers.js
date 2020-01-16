@@ -12,7 +12,7 @@ const stringifyArgs = args => {
 const resolvers = {
   JSONObject: GraphQLJSONObject,
   Query: {
-    node: async (parent, args, context, info) => {
+    getNodes: async (parent, args, context, info) => {
       // query for user by name (create the user manually if it doesn't already exist in your local neo4j db)
       const data = await session.run(`MATCH (u:${args.nodelabel} ${stringifyArgs(args.nodeArgs)} ) RETURN u`);
       // session.close()
@@ -21,6 +21,35 @@ const resolvers = {
       const output = data.records.map(record => record._fields[0].properties);
       // console.log(output);
 
+      return output;
+    },
+    search: async (parent, args, context, info) => {
+      let data
+      switch (args.type) {
+        case 'station':
+          data = await session.run(
+            `match (city:city) where city.name contains  toLower("${args.searchString}")
+             match (city)-[rel1:EXISTS_IN]->(country:country)
+             match (city)<-[rel2:EXISTS_IN]-(station:station)
+             return country, city, station`
+          )
+          break
+        case 'city':
+          data = await session.run(
+            `match (city:city) where city.name contains  toLower("${args.searchString}")
+            match (city) -[rel:EXISTS_IN]->(country:country)
+            return country, city`
+          )
+          break
+        default:
+          console.log(`error Searching for  ${args.type}`)
+      }
+
+      // access node properties
+      const output = data.records.map(record =>
+        record._fields.map(node => node.properties.name).join(', ')
+      )
+      console.log(output);
       return output;
     }
   },

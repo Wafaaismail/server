@@ -41,14 +41,14 @@ passport.use(
     async (email, password, done) => {
       try {
         //find the user given the email
-        const user = await resolvers.Query.node({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res);
+        const user = await resolvers.Query.getNodes({}, { nodelabel: "user", nodeArgs:{email} }) .then(res=> res[0]);
         //if not ,handle it
         if (!user) {
           return done(null, false);
         }
         
         //check if the password is correct
-        const isMatch = user[0].password == password;
+        const isMatch = user.password == password;
       
         //if not ,handle it
         if (!isMatch) {
