@@ -14,7 +14,9 @@ const resolvers = {
   Query: {
     getNodes: async (parent, args, context, info) => {
       // query for user by name (create the user manually if it doesn't already exist in your local neo4j db)
-      const data = await session.run(`MATCH (u:${args.nodelabel} ${stringifyArgs(args.nodeArgs)} ) RETURN u`);
+      const data = await session.run(
+        `MATCH (u:${args.nodelabel} ${stringifyArgs(args.nodeArgs)} ) RETURN u`
+      );
       // session.close()
 
       // access node properties
@@ -57,7 +59,7 @@ const resolvers = {
   Mutation: {
     createNode: async (parent, args, context, info) => {
       // prepare a string of node arguments
-      const nodeArgs = stringifyArgs({ ...args.nodeArgs, id: uuid() });
+      const nodeArgs = stringifyArgs({ ...args.nodeArgs });
       // create nodes
       const data = await session.run(
         `CREATE (a:${args.nodelabel} ${nodeArgs}) RETURN a`
@@ -69,11 +71,6 @@ const resolvers = {
 
       return nodeProps;
     },
-    // updateNode:async (parent, args, context, info) => {
-    //   console.log(args)
-    //   const nodeArgs =stringifyArgs( { ...args.nodeArgs })
-    //   console.log(nodeArgs)
-    //   const data = await session.run(`MATCH (a {id: ${JSON.stringify(args.nodeId)}}) SET a.${args.updateProp}=${JSON.stringify(args.newValue)} RETURN a`)
     updateNode: async (parent, args, context, info) => {
       console.log(args);
       const nodeArgs = stringifyArgs({ ...args.nodeArgs });
