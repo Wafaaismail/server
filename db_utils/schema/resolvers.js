@@ -23,6 +23,20 @@ const resolvers = {
 
       return output;
     },
+    normalizedSearch: async (parent, args, context, info) => {
+      const nodeLabel = args.nodelabel
+      const settings = args.settings
+      // search is always partial and case insensitive
+      data = await session.run(
+        `
+          match (self:${nodeLabel}) 
+          where self.${settings.relative ? `id` : settings.searchProp} =~ '(?i).*${settings.searchInput}.*'
+          ${settings.relative ? `match (self)-[]-(relative:${settings.relative.nodelabel}) return relative`
+          : 'return self'}
+        `
+      )
+      return data.records.map(record => (record._fields[0].properties))
+    },
     search: async (parent, args, context, info) => {
       let data
       switch (args.type) {
@@ -46,10 +60,19 @@ const resolvers = {
       }
 
       // access node properties
-      const output = data.records.map(record =>
-        record._fields.map(node => node.properties.name).join(', ')
+      
+      const output = data.records.map(record => {
+        const recordData = {}
+        record._fields.map(node => {
+          recordData[node.labels[0]] = {
+            name: node.properties.name,
+            id: node.properties.id
+          }
+        })
+        return recordData
+      }
       )
-      console.log(output);
+      console.log(output)
       return output;
     }
   },
@@ -57,7 +80,7 @@ const resolvers = {
   Mutation: {
     createNode: async (parent, args, context, info) => {
       // prepare a string of node arguments
-      const nodeArgs = stringifyArgs({ ...args.nodeArgs, id: uuid() });
+      const nodeArgs = stringifyArgs({ ...args.nodeArgs });
       // create nodes
       const data = await session.run(
         `CREATE (a:${args.nodelabel} ${nodeArgs}) RETURN a`

@@ -1,7 +1,7 @@
 // to empty neo4j database: MATCH (n) DETACH DELETE n
 
 const fs = require('fs')
-
+const uuid = require('../../helpers/uuid')
 let cypherQuery = 'CREATE\n'
 
 const users = ['amr', 'khaled', 'alaa', 'wafaa', 'amal', 'esraa']
@@ -15,11 +15,11 @@ users.forEach((user, index) => {
 })
 // add countries
 countries.forEach((country, index) => {
-  cypherQuery += `  (country_${index + 1}:country { name: '${country}' }), \n`
+  cypherQuery += `  (country_${index + 1}:country { name: '${country}' , id:${JSON.stringify(uuid())} }), \n`
 })
 // add cities
 cities.forEach((city, index) => {
-  cypherQuery += `  (city_${index + 1}:city { name: '${city}' }), \n`
+  cypherQuery += `  (city_${index + 1}:city { name: '${city}' , id:${JSON.stringify(uuid())}}), \n`
 })
 // add 3 stations for each city
 cities.forEach((city, index) => {
