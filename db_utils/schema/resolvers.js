@@ -12,23 +12,23 @@ const stringifyArgs = args => {
 const resolvers = {
   JSONObject: GraphQLJSONObject,
   Query: {
+
     getNodes: async (parent, args, context, info) => {
-      // query for user by name (create the user manually if it doesn't already exist in your local neo4j db)
-      const data = await session.run(
-        `MATCH (u:${args.nodelabel} ${stringifyArgs(args.nodeArgs)} ) RETURN u`
-      );
-      // session.close()
+      const data = await session.readTransaction(tx =>
+        tx.run(`match (node:${args.nodelabel} ${stringifyArgs(args.nodeArgs)}) return node`)
+      ).then(result => {
+        if (result) {
+          console.log('result', result)
+          return result.records.map(record => console.log(record._fields[0].properties));
+        }
+      })
 
-      // access node properties
-      const output = data.records.map(record => record._fields[0].properties);
-      // console.log(output);
-
-      return output;
     },
+
     normalizedSearch: async (parent, args, context, info) => {
       const nodeLabel = args.nodelabel
       const settings = args.settings
-      // search is always partial and case insensitive
+      // search is always partial and case-insensitive
       data = await session.run(
         `
           match (self:${nodeLabel}) 
@@ -62,7 +62,7 @@ const resolvers = {
       }
 
       // access node properties
-      
+
       const output = data.records.map(record => {
         const recordData = {}
         record._fields.map(node => {
