@@ -26,57 +26,86 @@ const resolvers = {
     },
 
     normalizedSearch: async (parent, args, context, info) => {
-      const nodeLabel = args.nodelabel
-      const settings = args.settings
-      // search is always partial and case-insensitive
-      data = await session.run(
-        `
-          match (self:${nodeLabel}) 
-          where self.${settings.relative ? `id` : settings.searchProp} =~ '(?i).*${settings.searchInput}.*'
-          ${settings.relative ? `match (self)-[]-(relative:${settings.relative.nodelabel}) return relative`
-          : 'return self'}
-        `
-      )
-      return data.records.map(record => (record._fields[0].properties))
-    },
-    search: async (parent, args, context, info) => {
-      let data
-      switch (args.type) {
-        case 'station':
-          data = await session.run(
-            `match (city:city) where city.name contains  toLower("${args.searchString}")
-             match (city)-[rel1:EXISTS_IN]->(country:country)
-             match (city)<-[rel2:EXISTS_IN]-(station:station)
-             return country, city, station`
-          )
-          break
-        case 'city':
-          data = await session.run(
-            `match (city:city) where city.name contains  toLower("${args.searchString}")
-            match (city) -[rel:EXISTS_IN]->(country:country)
-            return country, city`
-          )
-          break
-        default:
-          console.log(`error Searching for  ${args.type}`)
-      }
+      // destructure search settings
+      const {
+        searchNode, matchByExactProps, matchByPartialProp,
+        relative1, relative2, searchReturn
+      } = args.settings
+      // console.log(searchNode, matchByExactProps, matchByPartialProp, relative1, relative2, searchReturn)
 
-      // access node properties
+      // my amazing query
+      const QUERY = `
+        // match the node itself and see if it is a matchByExactProps
+        match (self:${searchNode} ${matchByExactProps ? stringifyArgs(matchByExactProps) : ''})
+        
+        // see if it is a matchByPartialProp (case-insensitive)
+        ${matchByPartialProp ?
+          `where self.${Object.keys(matchByPartialProp)[0]} =~ '(?i).*${Object.values(matchByPartialProp)[0]}.*'` : ''}
+        
+        // check relatives (maximum of 2) and create pattern if any
+        match
+        ${relative1 ? `(relative1:${relative1})-[]-` : ''} 
+        (self) 
+        ${relative2 ? `-[]-(relative2:${relative2})` : ''}
+        
+        return ${searchReturn}
+      `
+      // console.log(QUERY)
 
+      // run query
+      const data = await session.run(QUERY)
+
+      // access data
       const output = data.records.map(record => {
         const recordData = {}
         record._fields.map(node => {
-          recordData[node.labels[0]] = {
-            name: node.properties.name,
-            id: node.properties.id
-          }
+          recordData[node.labels[0]] = { ...node.properties }
         })
         return recordData
-      }
-      )
-      console.log(output)
-      return output;
-    }
+      })
+      // console.log(output)
+
+      return output
+    },
+
+    // search: async (parent, args, context, info) => {
+    //   let data
+    //   switch (args.type) {
+    //     case 'station':
+    //       data = await session.run(
+    //         `match (city:city) where city.name contains  toLower("${args.searchString}")
+    //          match (city)-[rel1:EXISTS_IN]->(country:country)
+    //          match (city)<-[rel2:EXISTS_IN]-(station:station)
+    //          return country, city, station`
+    //       )
+    //       break
+    //     case 'city':
+    //       data = await session.run(
+    //         `match (city:city) where city.name contains  toLower("${args.searchString}")
+    //         match (city) -[rel:EXISTS_IN]->(country:country)
+    //         return country, city`
+    //       )
+    //       break
+    //     default:
+    //       console.log(`error Searching for  ${args.type}`)
+    //   }
+
+    //   // access node properties
+
+    //   const output = data.records.map(record => {
+    //     const recordData = {}
+    //     record._fields.map(node => {
+    //       recordData[node.labels[0]] = {
+    //         name: node.properties.name,
+    //         id: node.properties.id
+    //       }
+    //     })
+    //     return recordData
+    //   }
+    //   )
+    //   console.log(output)
+    //   return output;
+    // }
   },
   // Mutation: buildMutationFuncs()
   Mutation: {

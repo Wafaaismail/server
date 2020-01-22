@@ -6,7 +6,7 @@ scalar JSONObject
   type Query{
       getNodes(nodelabel:String, nodeArgs:JSONObject):[JSONObject]
       search(type: String, searchString: String): [JSONObject]
-      normalizedSearch(nodelabel:String, settings:JSONObject):[JSONObject]
+      normalizedSearch(settings:JSONObject):[JSONObject]
 
   }
   type Mutation{
