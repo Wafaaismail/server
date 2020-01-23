@@ -1,5 +1,5 @@
 const session = require("../session");
-const { toString, map } = require("lodash");
+const { toString, map, cloneDeep } = require("lodash");
 const { GraphQLJSONObject } = require("graphql-type-json");
 const uuid = require("../../helpers/uuid");
 const relateTwoNodes = require("../operations/relationships");
@@ -26,12 +26,18 @@ const resolvers = {
     },
 
     normalizedSearch: async (parent, args, context, info) => {
+
       // destructure search settings
-      const {
+      let {
         searchNode, matchByExactProps, matchByPartialProp,
         relative1, relative2, searchReturn
       } = args.settings
       // console.log(searchNode, matchByExactProps, matchByPartialProp, relative1, relative2, searchReturn)
+      
+      // automatically add relation variables if needed
+      returnWords = searchReturn.split(',').length
+      if (returnWords === 2) searchReturn += ', rel1'
+      if (returnWords === 3) searchReturn += ', rel1, rel2'
 
       // my amazing query
       const QUERY = `
@@ -44,24 +50,56 @@ const resolvers = {
         
         // check relatives (maximum of 2) and create pattern if any
         match
-        ${relative1 ? `(relative1:${relative1})-[]-` : ''} 
+        ${relative1 ? `(relative1:${relative1})-[rel1]-` : ''} 
         (self) 
-        ${relative2 ? `-[]-(relative2:${relative2})` : ''}
+        ${relative2 ? `-[rel2]-(relative2:${relative2})` : ''}
         
         return ${searchReturn}
       `
-      // console.log(QUERY)
+
 
       // run query
       const data = await session.run(QUERY)
+      
+      // prepare storage for data
+      const output = {
+        [`${searchNode}_data`]: {}
+      }
+      if (relative1) {
+        output[`${relative1}_data`] = {}
+        output['relations_data'] = {}
+      }
+      if (relative2) output[`${relative2}_data`] = {}
+      // console.log(output)
 
-      // access data
-      const output = data.records.map(record => {
-        const recordData = {}
-        record._fields.map(node => {
-          recordData[node.labels[0]] = { ...node.properties }
+      // extract and allocate data in storage
+      data.records.map((record) => {
+        // console.log(record)
+        map(record._fieldLookup, (fieldIndex, field) => {
+          // get the object (node/relation)
+          const obj = record._fields[fieldIndex]
+          console.log(obj)
+          switch (field) {
+            case 'self': 
+            case 'relative1': 
+            case 'relative2':
+              // I used indexing here to override repeated data (query issue)
+              output[`${obj.labels[0]}_data`][obj.properties.id] = { ...obj.properties }
+              break
+            
+            case 'rel1':
+            case 'rel2':
+              // I used indexing here to override repeated data (query issue)
+              output['relations_data'][obj.properties.id] = { 
+                ...obj.properties, 
+                type: obj.type,
+                [`${searchNode}Id`]: record._fields[record._fieldLookup.self].properties.id,
+                [field == 'rel1' ? `${relative1}Id` : `${relative2}Id`]: record._fields[record._fieldLookup[field == 'rel1' ? 'relative1' : 'relative2']].properties.id
+              }
+              break
+          }
         })
-        return recordData
+
       })
       // console.log(output)
 

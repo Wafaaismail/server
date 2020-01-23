@@ -15,40 +15,40 @@ users.forEach((user, index) => {
 })
 // add countries
 countries.forEach((country, index) => {
-  cypherQuery += `  (country_${index + 1}:country { name: '${country}' , id:${JSON.stringify(uuid())} }), \n`
+  cypherQuery += `  (country_${index + 1}:country { name: '${country}' , id: '${uuid()}' }), \n`
 })
 // add cities
 cities.forEach((city, index) => {
-  cypherQuery += `  (city_${index + 1}:city { name: '${city}' , id:${JSON.stringify(uuid())}}), \n`
+  cypherQuery += `  (city_${index + 1}:city { name: '${city}' , id: '${uuid()}'}), \n`
 })
 // add 3 stations for each city
 cities.forEach((city, index) => {
   const maxIndex = (index + 1) * 3
-  cypherQuery += `  (station_${maxIndex - 2}:station { name: '${city} station1' }), \n`
-  cypherQuery += `  (station_${maxIndex - 1}:station { name: '${city} station2' }), \n`
-  cypherQuery += `  (station_${maxIndex}:station { name: '${city} station3' }), \n`
+  cypherQuery += `  (station_${maxIndex - 2}:station { name: '${city} station1' , id: '${uuid()}'}), \n`
+  cypherQuery += `  (station_${maxIndex - 1}:station { name: '${city} station2' , id: '${uuid()}'}), \n`
+  cypherQuery += `  (station_${maxIndex}:station { name: '${city} station3' , id: '${uuid()}'}), \n`
 })
 // add 3 passengers for each user
 users.forEach((user, index) => {
   const maxIndex = (index + 1) * 3
-  cypherQuery += `  (passenger_${maxIndex - 2}:passenger { name: '${user} passenger1' }), \n`
-  cypherQuery += `  (passenger_${maxIndex - 1}:passenger { name: '${user} passenger2' }), \n`
-  cypherQuery += `  (passenger_${maxIndex}:passenger { name: '${user} passenger3' }), \n`
+  cypherQuery += `  (passenger_${maxIndex - 2}:passenger { name: '${user} passenger1', id: '${uuid()}' }), \n`
+  cypherQuery += `  (passenger_${maxIndex - 1}:passenger { name: '${user} passenger2', id: '${uuid()}' }), \n`
+  cypherQuery += `  (passenger_${maxIndex}:passenger { name: '${user} passenger3', id: '${uuid()}' }), \n`
 })
 
 /* ------ RELATIONSHIPS ------ */
 // add relationships between countries and cities
 countries.forEach((county, index) => {
   const maxIndex = (index + 1) * 2
-  cypherQuery += `  (city_${maxIndex - 1}) -[:EXISTS_IN]-> (country_${index + 1}), \n`
-  cypherQuery += `  (city_${maxIndex}) -[:EXISTS_IN]-> (country_${index + 1}), \n`
+  cypherQuery += `  (city_${maxIndex - 1}) -[:EXISTS_IN {id: '${uuid()}'}]-> (country_${index + 1}), \n`
+  cypherQuery += `  (city_${maxIndex}) -[:EXISTS_IN {id: '${uuid()}'}]-> (country_${index + 1}), \n`
 })
 // add relationships between cities and stations
 cities.forEach((city, index) => {
   const maxIndex = (index + 1) * 3
-  cypherQuery += `  (station_${maxIndex - 2}) -[:EXISTS_IN]-> (city_${index + 1}), \n`
-  cypherQuery += `  (station_${maxIndex - 1}) -[:EXISTS_IN]-> (city_${index + 1}), \n`
-  cypherQuery += `  (station_${maxIndex}) -[:EXISTS_IN]-> (city_${index + 1}), \n`
+  cypherQuery += `  (station_${maxIndex - 2}) -[:EXISTS_IN {id: '${uuid()}'}]-> (city_${index + 1}), \n`
+  cypherQuery += `  (station_${maxIndex - 1}) -[:EXISTS_IN {id: '${uuid()}'}]-> (city_${index + 1}), \n`
+  cypherQuery += `  (station_${maxIndex}) -[:EXISTS_IN {id: '${uuid()}'}]-> (city_${index + 1}), \n`
 })
 
 cypherQuery += ' DELETE THIS LINE AND THE LAST COMMA ABOVE YASTA'
