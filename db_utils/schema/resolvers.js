@@ -56,7 +56,7 @@ const resolvers = {
         
         return ${searchReturn}
       `
-
+      console.log(QUERY)
 
       // run query
       const data = await session.run(QUERY)
@@ -78,7 +78,7 @@ const resolvers = {
         map(record._fieldLookup, (fieldIndex, field) => {
           // get the object (node/relation)
           const obj = record._fields[fieldIndex]
-          console.log(obj)
+          // console.log(obj)
           switch (field) {
             case 'self': 
             case 'relative1': 

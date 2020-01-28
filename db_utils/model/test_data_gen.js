@@ -51,32 +51,51 @@ cities.forEach((city, index) => {
   cypherQuery += `  (station_${maxIndex}) -[:EXISTS_IN {id: '${uuid()}'}]-> (city_${index + 1}), \n`
 })
 
-cypherQuery += ' DELETE THIS LINE AND THE LAST COMMA ABOVE YASTA'
+
+cypherQuery = cypherQuery.slice(0, -3) // delete from the end until last comma
+
+// journey1 test data
+// WITH is needed between the create above and the match below
+cypherQuery += `
+\n WITH true as pass \n
+match (s1:station {name: "cairo station1"})
+match (s2:station {name: "roma station1"})
+match (s3:station {name: "liverpool station1"})
+match (s4:station {name: "california station1"})
+create 
+(j:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t1:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v1:vehicle {type: "flight", id:"${uuid()}"}),
+(j)-[:HAS {id: "${uuid()}"}]->(t2:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v2:vehicle {type: "flight", id:"${uuid()}"}),
+(j)-[:HAS {id: "${uuid()}"}]->(t3:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v3:vehicle {type: "flight", id:"${uuid()}"}),
+(t1)-[:FROM {id: "${uuid()}"}]->(s1),
+(t1)-[:TO {id: "${uuid()}"}]->(s2),
+(t2)-[:FROM {id: "${uuid()}"}]->(s2),
+(t2)-[:TO {id: "${uuid()}"}]->(s3),
+(t3)-[:FROM {id: "${uuid()}"}]->(s3),
+(t3)-[:TO {id: "${uuid()}"}]->(s4)
+`
+
+
+// journey2 test data
+// WITH is needed between the create above and the match below
+cypherQuery += `
+\n WITH true as pass \n
+match (s5:station {name: "cairo station1"})
+match (s6:station {name: "roma station2"})
+match (s7:station {name: "liverpool station2"})
+match (s8:station {name: "california station2"})
+create 
+(j2:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t4:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v4:vehicle {type: "flight", id:"${uuid()}"}),
+(j2)-[:HAS {id: "${uuid()}"}]->(t5:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v5:vehicle {type: "flight", id:"${uuid()}"}),
+(j2)-[:HAS {id: "${uuid()}"}]->(t6:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v6:vehicle {type: "flight", id:"${uuid()}"}),
+(t4)-[:FROM {id: "${uuid()}"}]->(s5),
+(t4)-[:TO {id: "${uuid()}"}]->(s6),
+(t5)-[:FROM {id: "${uuid()}"}]->(s6),
+(t5)-[:TO {id: "${uuid()}"}]->(s7),
+(t6)-[:FROM {id: "${uuid()}"}]->(s7),
+(t6)-[:TO {id: "${uuid()}"}]->(s8)
+`
 
 console.log(cypherQuery)
-
-// ` CREATE
-//   ('user':user { name: "", password: "", email: "" }) ,
-//   ('payment':payment { type: "", card_no: "", status: "" }) ,
-//   ('journey':journey { start_dt: "", end_dt: "", duration:"" }) ,
-//   ('passenger':passenger { name: "", passport_data: "" }) ,
-//   ('trip':trip { start_dt: "", end_dt: "", duration:"" }) ,
-//   ('station':station { name: "", code: "" }) ,
-//   ('city':city { name: "" }) ,
-//   ('country':country { name: "" }) ,
-//   ('vehicle':vehicle { type: "", code: "" }) ,
-
-//   ('user')-[:'MAKES' ]->('payment'),
-//   ('payment')-[:'FOR' ]->('journey'),
-//   ('user')-[:'BOOKED' ]->('journey'),
-//   ('journey')-[:'FOR' ]->('passenger'),
-//   ('journey')-[:'HAS' ]->('trip'),
-//   ('trip')-[:'TO' ]->('station'),
-//   ('station')-[:'EXISTS_IN' ]->('city'),
-//   ('city')-[:'EXISTS_IN' ]->('country'),
-//   ('trip')-[:'FROM' ]->('station'),
-//   ('vehicle')-[:'MAKES' ]->('trip')
-// `
 
 fs.writeFile('test_data.txt', cypherQuery, (err) => {
   if (err) {

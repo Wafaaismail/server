@@ -7,7 +7,7 @@ const config = require("../../config/config")[env];
 // initialize driver connection
 const neo4jAuth = neo4j.auth.basic(config.username, config.password);
 const driver = neo4j.driver(config.neo4j_url, neo4jAuth);
-
+const uuid = require('../../helpers/uuid')
 const relateTwoNodes = async (parent, args, context, info) => {
   const session = driver.session();
   console.log("1", args.node1ID);
@@ -17,7 +17,7 @@ const relateTwoNodes = async (parent, args, context, info) => {
       tx.run(`
     MATCH (node1 {id: ${JSON.stringify(args.node1ID)}})
     MATCH (node2 {id: ${JSON.stringify(args.node2ID)}})
-    CREATE (node1)-[rel:${args.relType} {status: "created"}]-${
+    CREATE (node1)-[rel:${args.relType} {id: "${uuid()}"}]-${
         args.biDirectional ? "" : ">"
       }(node2)
     RETURN rel

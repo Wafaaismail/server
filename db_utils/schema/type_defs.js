@@ -15,8 +15,6 @@ scalar JSONObject
     updateNode(nodeId: String,nodeArgs:JSONObject):String
     deleteNode(nodeId:String):Boolean
 
-
-
     relateTwoNodes(node1ID :String, node2ID :String, relType:String, biDirectional:Boolean) :JSONObject 
   }
 `
