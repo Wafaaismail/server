@@ -63,9 +63,9 @@ match (s2:station {name: "roma station1"})
 match (s3:station {name: "liverpool station1"})
 match (s4:station {name: "california station1"})
 create 
-(j:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t1:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v1:vehicle {type: "flight", id:"${uuid()}"}),
-(j)-[:HAS {id: "${uuid()}"}]->(t2:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v2:vehicle {type: "flight", id:"${uuid()}"}),
-(j)-[:HAS {id: "${uuid()}"}]->(t3:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v3:vehicle {type: "flight", id:"${uuid()}"}),
+(j:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t1:trip {start_d:"2010-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v1:vehicle {type: "flight", id:"${uuid()}"}),
+(j)-[:HAS {id: "${uuid()}"}]->(t2:trip {start_d:"2015-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v2:vehicle {type: "flight", id:"${uuid()}"}),
+(j)-[:HAS {id: "${uuid()}"}]->(t3:trip {start_d:"2020-01-27 15:15", end_d:"2015-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v3:vehicle {type: "flight", id:"${uuid()}"}),
 (t1)-[:FROM {id: "${uuid()}"}]->(s1),
 (t1)-[:TO {id: "${uuid()}"}]->(s2),
 (t2)-[:FROM {id: "${uuid()}"}]->(s2),
@@ -84,9 +84,9 @@ match (s6:station {name: "roma station2"})
 match (s7:station {name: "liverpool station2"})
 match (s8:station {name: "california station2"})
 create 
-(j2:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t4:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v4:vehicle {type: "flight", id:"${uuid()}"}),
-(j2)-[:HAS {id: "${uuid()}"}]->(t5:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v5:vehicle {type: "flight", id:"${uuid()}"}),
-(j2)-[:HAS {id: "${uuid()}"}]->(t6:trip {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v6:vehicle {type: "flight", id:"${uuid()}"}),
+(j2:journey {start_d:"2020-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})-[:HAS {id: "${uuid()}"}]->(t4:trip {start_d:"2011-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v4:vehicle {type: "flight", id:"${uuid()}"}),
+(j2)-[:HAS {id: "${uuid()}"}]->(t5:trip {start_d:"2017-01-27 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v5:vehicle {type: "flight", id:"${uuid()}"}),
+(j2)-[:HAS {id: "${uuid()}"}]->(t6:trip {start_d:"2019-01-25 15:15", end_d:"2020-01-28 15:15", id:"${uuid()}"})<-[:MAKES {id: "${uuid()}"}]-(v6:vehicle {type: "flight", id:"${uuid()}"}),
 (t4)-[:FROM {id: "${uuid()}"}]->(s5),
 (t4)-[:TO {id: "${uuid()}"}]->(s6),
 (t5)-[:FROM {id: "${uuid()}"}]->(s6),

@@ -1,8 +1,19 @@
-const session = require("../session");
+// const session = require("../session");
 const { toString, map, cloneDeep } = require("lodash");
 const { GraphQLJSONObject } = require("graphql-type-json");
 const uuid = require("../../helpers/uuid");
 const relateTwoNodes = require("../operations/relationships");
+const neo4j = require("neo4j-driver");
+
+// get neo4j configurations
+const env = process.env.NODE_ENV || "development";
+const config = require("../../config/config")[env];
+
+// initialize driver connection
+const neo4jAuth = neo4j.auth.basic(config.username, config.password);
+const driver = neo4j.driver(config.neo4j_url, neo4jAuth);
+let session = driver.session();
+
 const stringifyArgs = args => {
   // delete args.nodelabel
   return (
@@ -33,7 +44,7 @@ const resolvers = {
         relative1, relative2, searchReturn
       } = args.settings
       // console.log(searchNode, matchByExactProps, matchByPartialProp, relative1, relative2, searchReturn)
-      
+
       // automatically add relation variables if needed
       returnWords = searchReturn.split(',').length
       if (returnWords === 2) searchReturn += ', rel1'
@@ -57,10 +68,10 @@ const resolvers = {
         return ${searchReturn}
       `
       console.log(QUERY)
-
+      session = driver.session();
       // run query
       const data = await session.run(QUERY)
-      
+
       // prepare storage for data
       const output = {
         [`${searchNode}_data`]: {}
@@ -80,18 +91,18 @@ const resolvers = {
           const obj = record._fields[fieldIndex]
           // console.log(obj)
           switch (field) {
-            case 'self': 
-            case 'relative1': 
+            case 'self':
+            case 'relative1':
             case 'relative2':
               // I used indexing here to override repeated data (query issue)
               output[`${obj.labels[0]}_data`][obj.properties.id] = { ...obj.properties }
               break
-            
+
             case 'rel1':
             case 'rel2':
               // I used indexing here to override repeated data (query issue)
-              output['relations_data'][obj.properties.id] = { 
-                ...obj.properties, 
+              output['relations_data'][obj.properties.id] = {
+                ...obj.properties,
                 type: obj.type,
                 [`${searchNode}Id`]: record._fields[record._fieldLookup.self].properties.id,
                 [field == 'rel1' ? `${relative1}Id` : `${relative2}Id`]: record._fields[record._fieldLookup[field == 'rel1' ? 'relative1' : 'relative2']].properties.id
@@ -148,20 +159,29 @@ const resolvers = {
   // Mutation: buildMutationFuncs()
   Mutation: {
     createNode: async (parent, args, context, info) => {
+      session = driver.session();
+      console.log(args)
       // prepare a string of node arguments
       const nodeArgs = stringifyArgs({ ...args.nodeArgs });
+      console.log('nodeArgs',nodeArgs)
+      let nodeProps
       // create nodes
-      const data = await session.run(
-        `CREATE (a:${args.nodelabel} ${nodeArgs}) RETURN a`
-      );
-      // access and return node properties
-      const nodeProps = data.records.map(
-        record => record._fields[0].properties
-      )[0];
-
+      const data =  await session.run(
+            `CREATE (a:${args.nodelabel} ${nodeArgs}) RETURN a`
+          )
+          console.log(data)
+          if (data) {
+            // access and return node properties
+             nodeProps = data.records.map(
+              record => record._fields[0].properties
+            )[0];
+          }
+        
       return nodeProps;
     },
+
     updateNode: async (parent, args, context, info) => {
+      session = driver.session();
       console.log(args);
       const nodeArgs = stringifyArgs({ ...args.nodeArgs });
       console.log(nodeArgs);
